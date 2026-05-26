@@ -1,0 +1,62 @@
+# DELIBERATELY VULNERABLE — for scanner testing only
+# Contains all three unsafe patterns:
+#   (a) pull_request_target + checkout of untrusted PR code
+#   (b) secrets used in untrusted context
+#   (c) overly permissive permissions
+
+name: PR API Diff Check
+
+# (c) Overly permissive permissions — grants write access to everything
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  packages: write
+
+# (a) pull_request_target runs in the context of the BASE repo,
+#     meaning it has access to secrets and elevated permissions.
+#     This is the exact pattern that compromised Trivy in March 2026.
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  api-diff:
+    runs-on: ubuntu-latest
+    steps:
+      # (a) UNSAFE: checking out the PR head (attacker-controlled code)
+      #     in a workflow that runs with base repo privileges
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      # (b) UNSAFE: using secrets in a context where untrusted PR code
+      #     has already been checked out and can read environment variables
+      - name: Run API diff
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/api-diff.js
+          echo "Diff complete"
+
+      # (b) UNSAFE: passing secrets directly in a run step after
+      #     untrusted code checkout
+      - name: Post comment
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            -d '{"body": "API diff check passed"}'
