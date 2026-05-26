@@ -1,10 +1,9 @@
 {
   "name": "sca-supply-chain-detection-test",
   "version": "1.0.0",
-  "description": "Test project to verify Dependency-Check detection of known supply chain attacks: (a) Qix compromise Sep 2025, (b) Shai Hulud Sep-Nov 2025, (c) Mini Shai Hulud / TanStack May 2026",
+  "description": "Test project: (a) Qix Sep 2025, (b) Shai Hulud Sep-Nov 2025, (c) TanStack May 2026, (d) CONTROL - known enriched CVEs that SHOULD be detected",
   "private": true,
   "dependencies": {
-    "___SECTION_A_QIX_COMPROMISE_SEP_2025___": "--- CVE-2025-59144 and related, NVD status: Not Scheduled ---",
     "chalk": "5.6.1",
     "debug": "4.4.2",
     "ansi-styles": "6.2.2",
@@ -24,8 +23,6 @@
     "chalk-template": "1.1.1",
     "supports-hyperlinks": "4.1.1",
     "backslash": "0.2.1",
-
-    "___SECTION_B_SHAI_HULUD_SEP_NOV_2025___": "--- No CVE for tinycolor, CVE-2025-10894 for Nx, NVD status: Awaiting Analysis ---",
     "@ctrl/tinycolor": "4.1.1",
     "@ctrl/deluge": "7.2.2",
     "@ctrl/golang-template": "1.4.3",
@@ -43,8 +40,6 @@
     "angulartics2": "14.1.2",
     "json-rules-engine-simplified": "0.2.4",
     "koa2-swagger-ui": "5.11.2",
-
-    "___SECTION_C_MINI_SHAI_HULUD_TANSTACK_MAY_2026___": "--- CVE-2026-45321, NVD status: Received, no enrichment ---",
     "@tanstack/react-router": "1.169.8",
     "@tanstack/router-core": "1.169.5",
     "@tanstack/history": "1.161.12",
@@ -54,6 +49,9 @@
     "@tanstack/react-start-server": "1.169.8",
     "@tanstack/react-start-client": "1.169.8",
     "@tanstack/vue-router": "1.169.8",
-    "@tanstack/solid-router": "1.169.8"
+    "@tanstack/solid-router": "1.169.8",
+    "lodash": "4.17.20",
+    "minimist": "1.2.5",
+    "node-forge": "1.2.1"
   }
 }
